@@ -72,8 +72,9 @@
     <div id="console"></div>
 
     <div class="actions-grid" style="grid-template-columns: 1fr 1fr;">
-       <button onclick="exportLocalSave()">📤 Export Save File</button>
-<button onclick="importLocalSave()">📥 Import Save File</button>
+       <!-- Sửa importLocalSave() thành importCustomSaveFile() -->
+<button onclick="exportCustomSaveFile()">📤 Tải File (.mikra)</button>
+<button onclick="importCustomSaveFile()">📥 Nạp File (.mikra)</button>
         <button class="btn" style="background-color: #1f6feb;" onclick="cloudSync(true)">☁️ Save Cloud</button>
        <button class="btn" style="background-color: #238636;" onclick="cloudSync(false)">📥 Load Cloud</button>
     </div>
