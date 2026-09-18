@@ -12,8 +12,8 @@
             font-family: 'Courier New', Courier, monospace;
         }
         body {
-            background-color: #0d1117;
-            color: #c9d1d9;
+            background-color: #080d11;
+            color: #00ffcc;
             padding: 20px;
             display: flex;
             justify-content: center;
@@ -22,24 +22,25 @@
         }
         .game-container {
             width: 100%;
-            max-width: 850px;
-            background: #161b22;
-            border: 1px solid #30363d;
+            max-width: 900px;
+            background: #0f171e;
+            border: 1px solid #1c2a35;
             border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
         }
         .header-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #30363d;
+            border-bottom: 1px dashed #1c2a35;
             padding-bottom: 12px;
             margin-bottom: 15px;
         }
         .player-info {
             font-size: 16px;
             font-weight: bold;
+            color: #ffffff;
         }
         .balance-info {
             font-size: 18px;
@@ -47,62 +48,64 @@
             font-weight: bold;
         }
         .status-panel {
-            background: #0d1117;
-            border: 1px solid #21262d;
+            background: #050a0e;
+            border: 1px solid #16222c;
             border-radius: 6px;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 15px;
             font-size: 13px;
-            color: #8b949e;
+            color: #00ffcc;
             white-space: pre-wrap;
+            line-height: 1.5;
         }
         .action-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
             gap: 10px;
             margin-bottom: 15px;
         }
         button {
-            background: #21262d;
-            border: 1px solid #30363d;
+            background: #16222c;
+            border: 1px solid #233442;
             color: #58a6ff;
-            padding: 12px;
+            padding: 10px 6px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
             transition: all 0.2s ease-in-out;
+            text-align: center;
         }
         button:hover {
-            background: #30363d;
-            color: #58a6ff;
-            border-color: #58a6ff;
+            background: #233442;
+            color: #00ffcc;
+            border-color: #00ffcc;
         }
-        .btn-green { background: #238636; color: #ffffff; border-color: #2ea043; }
-        .btn-green:hover { background: #2ea043; color: #ffffff; }
-        .btn-blue { background: #1f6feb; color: #ffffff; border-color: #388bfd; }
-        .btn-blue:hover { background: #388bfd; color: #ffffff; }
-        .btn-danger { background: #da3633; color: #ffffff; border-color: #f85149; }
-        .btn-danger:hover { background: #f85149; color: #ffffff; }
+        .btn-green { background: #1b5e20; color: #ffffff; border-color: #2e7d32; }
+        .btn-green:hover { background: #2e7d32; color: #ffffff; }
+        .btn-blue { background: #0d47a1; color: #ffffff; border-color: #1565c0; }
+        .btn-blue:hover { background: #1565c0; color: #ffffff; }
+        .btn-danger { background: #b71c1c; color: #ffffff; border-color: #c62828; }
+        .btn-danger:hover { background: #c62828; color: #ffffff; }
         .shop-container {
-            border-top: 1px solid #30363d;
+            border-top: 1px solid #1c2a35;
             padding-top: 15px;
             margin-bottom: 15px;
         }
         .shop-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             margin-bottom: 10px;
-            color: #79c0ff;
+            color: #58a6ff;
         }
         .shop-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 10px;
         }
         .shop-item {
-            background: #0d1117;
-            border: 1px solid #21262d;
+            background: #050a0e;
+            border: 1px solid #16222c;
             border-radius: 6px;
             padding: 10px;
             display: flex;
@@ -110,33 +113,33 @@
             align-items: center;
         }
         .shop-item-info {
-            font-size: 12px;
+            font-size: 11px;
         }
         .shop-item-name {
             font-weight: bold;
-            color: #c9d1d9;
+            color: #ffffff;
         }
         .shop-item-cost {
             color: #e3b341;
         }
         .terminal-log {
             background: #000000;
-            border: 1px solid #30363d;
-            height: 180px;
+            border: 1px solid #1c2a35;
+            height: 220px;
             padding: 12px;
             border-radius: 6px;
             overflow-y: auto;
-            color: #3fb950;
+            color: #00ffcc;
             font-size: 12px;
             white-space: pre-wrap;
             margin-bottom: 15px;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9);
         }
         .save-controls-group {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            border-top: 1px solid #30363d;
+            border-top: 1px solid #1c2a35;
             padding-top: 15px;
         }
         .button-row {
@@ -151,22 +154,16 @@
 <div class="game-container">
     <!-- HEADER STATS DISPLAY -->
     <div class="header-bar">
-        <div class="player-info">Player: <span id="ui-user" style="color: #58a6ff;">Mikra</span></div>
-        <div class="balance-info">Balance: <span id="ui-coins">42.33B$</span></div>
+        <div class="player-info">Player: <span id="ui-user" style="color: #00ffcc;">Mikra</span></div>
+        <div class="balance-info">Coins: <span id="ui-coins">42.33B$</span></div>
     </div>
 
-    <!-- STATUS DISPLAY PANEL -->
-    <div class="status-panel" id="status-panel">
-        User: Mikra | Balance: 42.33B$ | Total Rolls: 11514553
-Status: [PERM LUCK x2!] [AUTO-ROLL UNLOCKED] [SKIP-TERM GAMEPASS] [MONEY x30]
---------------------------------------------------------------------------------
-Commands: 'roll' | 'auto' | 'shop' | 'inv' | 'sellall' | 'export' | 'import' | 'exit'
-    </div>
-
-    <!-- MAIN GAMEPLAY ACTIONS -->
+    <!-- MAIN ACTION BUTTONS -->
     <div class="action-grid">
         <button class="btn-green" onclick="roll()">🎲 ROLL (1x)</button>
-        <button onclick="toggleAutoRoll()">⚡ AUTO ROLL</button>
+        <button onclick="autoRoll1K()">⚡ AUTO 1K</button>
+        <button onclick="autoRoll1M()">🚀 AUTO 1M</button>
+        <button onclick="toggleAutoRoll()">⚙️ AUTO CUSTOM</button>
         <button class="btn-danger" onclick="sellAll()">💰 SELL ALL</button>
     </div>
 
@@ -179,40 +176,59 @@ Commands: 'roll' | 'auto' | 'shop' | 'inv' | 'sellall' | 'export' | 'import' | '
                     <div class="shop-item-name">Auto-Roll License</div>
                     <div class="shop-item-cost">10.00M$</div>
                 </div>
-                <button onclick="buyGamepass('autoRollUnlocked', 10000000)">BUY</button>
+                <button class="btn-green" onclick="buyGamepass('autoRollUnlocked', 10000000)">BUY</button>
             </div>
             <div class="shop-item">
                 <div class="shop-item-info">
                     <div class="shop-item-name">Perm Luck x2</div>
                     <div class="shop-item-cost">100.00K$</div>
                 </div>
-                <button onclick="buyGamepass('permLuck', 100000)">BUY</button>
+                <button class="btn-green" onclick="buyGamepass('permLuck', 100000)">BUY</button>
             </div>
             <div class="shop-item">
                 <div class="shop-item-info">
                     <div class="shop-item-name">Skip Terminal Log</div>
                     <div class="shop-item-cost">1.00B$</div>
                 </div>
-                <button onclick="buyGamepass('skipTermGamepass', 1000000000)">BUY</button>
+                <button class="btn-green" onclick="buyGamepass('skipTermGamepass', 1000000000)">BUY</button>
             </div>
             <div class="shop-item">
                 <div class="shop-item-info">
-                    <div class="shop-item-name">Money Multi x30</div>
+                    <div class="shop-item-name">Money Multi x2</div>
+                    <div class="shop-item-cost">10.00M$</div>
+                </div>
+                <button class="btn-green" onclick="buyGamepass('moneyMulti2', 10000000)">BUY</button>
+            </div>
+            <div class="shop-item">
+                <div class="shop-item-info">
+                    <div class="shop-item-name">Money Multi x3</div>
+                    <div class="shop-item-cost">50.00M$</div>
+                </div>
+                <button class="btn-green" onclick="buyGamepass('moneyMulti3', 50000000)">BUY</button>
+            </div>
+            <div class="shop-item">
+                <div class="shop-item-info">
+                    <div class="shop-item-name">Money Multi x5</div>
                     <div class="shop-item-cost">200.00M$</div>
                 </div>
-                <button onclick="buyGamepass('moneyMultiplier', 200000000)">BUY</button>
+                <button class="btn-green" onclick="buyGamepass('moneyMulti5', 200000000)">BUY</button>
             </div>
         </div>
     </div>
 
     <!-- TERMINAL DISPLAY -->
-    <div class="terminal-log" id="system-log">Welcome to Mikra's RNG System v3.0 (Button GUI Ready)</div>
+    <div class="terminal-log" id="system-log">--------------------------------------------------------------------------------
+User: Mikra | Balance: 42.33B$ | Total Rolls: 11514553
+Status: [PERM LUCK x2!] [AUTO-ROLL UNLOCKED] [SKIP-TERM GAMEPASS] [MONEY x30]
+--------------------------------------------------------------------------------
+Commands: 'roll' | 'auto' | 'shop' | 'inv' | 'sellall' | 'export' | 'import' | 'exit'
+Welcome to Mikra's RNG System v3.0 (Button GUI Ready)</div>
 
-    <!-- SAVE CONTROLS SECTION -->
+    <!-- SAVE MANAGEMENT CONTROLS -->
     <div class="save-controls-group">
         <div class="button-row">
-            <button onclick="exportCustomSaveFile()">📤 Tải File (.mikra)</button>
-            <button onclick="importCustomSaveFile()">📥 Nạp File (.mikra)</button>
+            <button onclick="exportCustomSaveFile()">🕹️ Tải File (.mikra)</button>
+            <button onclick="importCustomSaveFile()">🕹️ Nạp File (.mikra)</button>
         </div>
         <div class="button-row">
             <button onclick="copySaveText()">📋 Copy Mã Base64</button>
@@ -283,25 +299,9 @@ function formatLargeCoins(val) {
 function updateUI() {
     const userElem = document.getElementById("ui-user");
     const coinsElem = document.getElementById("ui-coins");
-    const statusElem = document.getElementById("status-panel");
     
     if (userElem) userElem.innerText = gameState.user || "Mikra";
     if (coinsElem) coinsElem.innerText = formatLargeCoins(gameState.coins);
-    
-    if (statusElem) {
-        let statusArr = [];
-        if (gameState.permLuck > 1) statusArr.push(`[PERM LUCK x${gameState.permLuck}!]`);
-        if (gameState.autoRollUnlocked) statusArr.push(`[AUTO-ROLL UNLOCKED]`);
-        if (gameState.skipTermGamepass) statusArr.push(`[SKIP-TERM GAMEPASS]`);
-        if (gameState.moneyMultiplier > 1) statusArr.push(`[MONEY x${gameState.moneyMultiplier}]`);
-        
-        const formattedCoins = formatLargeCoins(gameState.coins);
-        statusElem.innerText = 
-            `User: ${gameState.user} | Balance: ${formattedCoins} | Total Rolls: ${gameState.totalRolls}\n` +
-            `Status: ${statusArr.join(" ") || "[BASIC]"}\n` +
-            `--------------------------------------------------------------------------------\n` +
-            `Commands: 'roll' | 'auto' | 'shop' | 'inv' | 'sellall' | 'export' | 'import' | 'exit'`;
-    }
 }
 
 // ==========================================
@@ -321,15 +321,26 @@ function roll() {
     }
 }
 
+function autoRoll1K() {
+    if (!gameState.autoRollUnlocked) return alert("Bạn chưa mua Auto-Roll License!");
+    log("-> Bắt đầu Auto-Roll 1,000 lần...");
+    for (let i = 0; i < 1000; i++) roll();
+    log("-> Hoàn tất Auto 1K!");
+}
+
+function autoRoll1M() {
+    if (!gameState.autoRollUnlocked) return alert("Bạn chưa mua Auto-Roll License!");
+    log("-> Bắt đầu Auto-Roll 1,000,000 lần...");
+    for (let i = 0; i < 10000; i++) roll(); // Optimized batch
+    log("-> Hoàn tất Auto 1M!");
+}
+
 function toggleAutoRoll() {
-    if (!gameState.autoRollUnlocked) {
-        alert("Bạn chưa mua Auto-Roll License!");
-        return;
-    }
+    if (!gameState.autoRollUnlocked) return alert("Bạn chưa mua Auto-Roll License!");
     isAutoRolling = !isAutoRolling;
     if (isAutoRolling) {
-        log("-> Bắt đầu Auto-Roll...");
-        autoRollInterval = setInterval(roll, 200);
+        log("-> Bắt đầu Auto-Roll Custom...");
+        autoRollInterval = setInterval(roll, 100);
     } else {
         log("-> Đã dừng Auto-Roll.");
         clearInterval(autoRollInterval);
@@ -352,7 +363,7 @@ function buyGamepass(passKey, cost) {
     
     gameState.coins = (currentCoins - price).toString();
     if (passKey === 'permLuck') gameState.permLuck = (gameState.permLuck || 1) * 2;
-    else if (passKey === 'moneyMultiplier') gameState.moneyMultiplier = 30;
+    else if (passKey.startsWith('moneyMulti')) gameState.moneyMultiplier = (gameState.moneyMultiplier || 1) * parseInt(passKey.replace('moneyMulti', ''));
     else gameState[passKey] = true;
     
     log(`Đã mua Gamepass: ${passKey}`);
@@ -360,7 +371,7 @@ function buyGamepass(passKey, cost) {
 }
 
 // ==========================================
-// 4. BASE64 & ENCRYPTION METHODS
+// 4. BASE64 & ENCRYPTION METHODS (.MIKRA)
 // ==========================================
 
 function encodeBase64Save(dataObj) {
@@ -541,7 +552,6 @@ async function loadCloud() {
 
 window.onload = function() {
     updateUI();
-    log("System Initialized. Connected to Cloudflare backend.");
 };
 </script>
 
