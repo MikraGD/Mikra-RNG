@@ -80,9 +80,6 @@
     </div>
 </div>
 
-function importLocalSave() {
-    importCustomSaveFile(); // Gọi thẳng sang hàm đọc file mã hóa .mikra
-}
     <script>
 const WORKER_API_URL = "https://mikrarngapi.mikrayoutube.workers.dev/api/sync";    // Ok login things
    async function cloudSync(isSaveAction = false) {
@@ -422,6 +419,9 @@ function pasteSaveText() {
     } else {
         alert("🔴 Lỗi: Mã Save không hợp lệ hoặc bị sửa đổi!");
     }
+}
+        function importLocalSave() {
+    importCustomSaveFile(); // Gọi thẳng sang hàm đọc file mã hóa .mikra
 }
 </script>
 
