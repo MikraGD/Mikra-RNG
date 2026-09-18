@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mikra's RNG </title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
+        body { background-color: #0d1117; color: #c9d1d9; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
+        
+        .game-card { width: 100%; max-width: 950px; background-color: #161b22; border: 1px solid #30363d; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; gap: 12px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* Dashboard Stats */
+        .stats-panel { background: #21262d; border: 1px solid #30363d; padding: 12px 15px; border-radius: 6px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+        .stat-box { font-size: 14px; font-weight: bold; }
+        .coins-val { color: #2ea043; font-size: 18px; }
+        .badge { background: #388bfd15; color: #58a6ff; border: 1px solid #388bfd30; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 4px; }
+        
+        /* Action Controls Grid */
+        .actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+        .btn { background-color: #21262d; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px; padding: 10px; cursor: pointer; font-weight: bold; font-family: inherit; font-size: 13px; text-align: center; transition: all 0.2s; }
+        .btn:hover { background-color: #30363d; border-color: #8b949e; }
+        .btn-primary { background-color: #238636; color: #fff; border-color: rgba(240,246,252,0.1); }
+        .btn-primary:hover { background-color: #2ea043; }
+        .btn-danger { background-color: #da3633; color: #fff; }
+        .btn-danger:hover { background-color: #f85149; }
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* Shop Section UI */
+        .section-title { font-size: 14px; font-weight: bold; color: #58a6ff; margin-top: 5px; }
+        .shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+        .shop-item { background: #0d1117; border: 1px solid #30363d; padding: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .shop-info { font-size: 12px; }
+        .shop-name { font-weight: bold; color: #f0f6fc; margin-bottom: 3px; }
+        .shop-price { color: #8b949e; }
+
+        /* Console Window Output */
+        #console { height: 240px; background-color: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 12px; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; font-size: 13px; line-height: 1.4; color: #8b949e; }
+        #console::-webkit-scrollbar { width: 6px; }
+        #console::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<div class="game-card">
+    <!-- Top Player Stats Bar -->
+    <div class="stats-panel">
+        <div class="stat-box">
+            Player: <span id="username" style="color: #f0f6fc;">Mikra</span>
+            <span id="badges"></span>
+        </div>
+        <div class="stat-box">
+            Coins: <span id="coins" class="coins-val">0$</span>
+        </div>
+    </div>
+
+    <!-- Gameplay Buttons -->
+    <div class="actions-grid">
+        <button class="btn btn-primary" onclick="rollOnce()">🎲 ROLL (1x)</button>
+        <button class="btn" id="btnAuto1k" onclick="autoRoll(1000)">⚡ AUTO 1K</button>
+        <button class="btn" id="btnAuto1m" onclick="autoRoll(1000000)">🚀 AUTO 1M</button>
+        <button class="btn" id="btnAutoCustom" onclick="customAutoRoll()">⚙️ AUTO CUSTOM</button>
+        <button class="btn btn-danger" onclick="sellAll()">💰 SELL ALL</button>
+    </div>
+
+    <!-- Shop Interface -->
+    <div class="section-title">🛒 SHOP GAMEPASSES</div>
+    <div class="shop-grid" id="shopGrid"></div>
+
+    <!-- Data Controls & Output Log -->
+    <div class="section-title">📊 SYSTEM LOG</div>
+    <div id="console"></div>
+
+    <div class="actions-grid" style="grid-template-columns: 1fr 1fr;">
+        <button class="btn" onclick="exportCode()">📤 Export Save Code</button>
+        <button class="btn" onclick="importCode()">📥 Import Save Code</button>
+    </div>
+</div>
+
+<script>
+    // GAME ENGINE & CONFIGURATION
+    const items = [
+        { name: "Nature",   chance: 6000, rarity: "Common",    price: 10 },
+        { name: "Winter",   chance: 4000, rarity: "Uncommon",  price: 25 },
+        { name: "Rock",     chance: 2000, rarity: "Rare",      price: 50 },
+        { name: "Iron",     chance: 1000, rarity: "Epic",      price: 100 },
+        { name: "Gold",     chance: 500,  rarity: "Legendary", price: 250 },
+        { name: "Diamond",  chance: 100,  rarity: "Mythical",  price: 1000 },
+        { name: "Mikra",    chance: 10,   rarity: "Godlike",   price: 10000 },
+        { name: "GalaXy",   chance: 2,    rarity: "Secret",    price: 100000 },
+        { name: "Matrix",   chance: 1,    rarity: "Cosmic",    price: 500000 }
+    ];
+
+    const shopItems = [
+    { id: "auto", name: "Auto-Roll License", price: 10000000, key: "hasAutoRoll" },
+    { id: "luck", name: "Perm Luck x2", price: 100000, key: "isPermLuck" },
+    { id: "skip", name: "Skip Terminal Log", price: 1000000000, key: "isSkipTerminal" },
+    { id: "m2",   name: "Money Multi x2", price: 10000000, key: "hasMulti2", multi: 2 },
+    { id: "m3",   name: "Money Multi x3", price: 50000000, key: "hasMulti3", multi: 3 },
+    { id: "m5",   name: "Money Multi x5", price: 200000000, key: "hasMulti5", multi: 5 }
+];
+
+    let gameState = {
+        username: "Mikra",
+        coins: 0,
+        totalRolls: 0,
+        isPermLuck: false,
+        isSkipTerminal: false,
+        hasAutoRoll: false,
+        moneyMulti: 1,
+        inventory: []
+    };
+
+    // UTILITIES
+    function formatMoney(amount) {
+        amount = Number(amount) || 0;
+        if (amount >= 1e12) return (amount / 1e12).toFixed(2) + "T$";
+        if (amount >= 1e9)  return (amount / 1e9).toFixed(2) + "B$";
+        if (amount >= 1e6)  return (amount / 1e6).toFixed(2) + "M$";
+        if (amount >= 1e3)  return (amount / 1e3).toFixed(2) + "K$";
+        return Math.floor(amount) + "$";
+    }
+
+    function log(text) {
+        const c = document.getElementById("console");
+        c.innerText += text + "\n";
+        c.scrollTop = c.scrollHeight;
+    }
+
+    function updateUI() {
+        document.getElementById("coins").innerText = formatMoney(gameState.coins);
+        
+        let badges = "";
+        if (gameState.isPermLuck) badges += `<span class="badge">LUCK x2</span>`;
+        if (gameState.hasAutoRoll) badges += `<span class="badge">AUTO</span>`;
+        if (gameState.isSkipTerminal) badges += `<span class="badge">SKIP-LOG</span>`;
+        if (gameState.moneyMulti > 1) badges += `<span class="badge">x${gameState.moneyMulti} MONEY</span>`;
+        document.getElementById("badges").innerHTML = badges;
+
+        document.getElementById("btnAuto1k").disabled = !gameState.hasAutoRoll;
+        document.getElementById("btnAuto1m").disabled = !gameState.hasAutoRoll;
+        document.getElementById("btnAutoCustom").disabled = !gameState.hasAutoRoll;
+
+        renderShop();
+        saveGame();
+    }
+
+    function renderShop() {
+        const grid = document.getElementById("shopGrid");
+        grid.innerHTML = "";
+        
+        shopItems.forEach(item => {
+            let owned = item.key ? gameState[item.key] : false;
+            let btnText = owned ? "OWNED" : "BUY";
+            let btnDisabled = owned || gameState.coins < item.price;
+
+            grid.innerHTML += `
+                <div class="shop-item">
+                    <div class="shop-info">
+                        <div class="shop-name">${item.name}</div>
+                        <div class="shop-price">${formatMoney(item.price)}</div>
+                    </div>
+                    <button class="btn btn-primary" ${btnDisabled ? "disabled" : ""} onclick="buyShopItem('${item.id}')">${btnText}</button>
+                </div>
+            `;
+        });
+    }
+
+    // GAME LOGIC
+    function getRandomItem() {
+        let totalChance = 0;
+        items.forEach(i => {
+            totalChance += (gameState.isPermLuck && i.rarity !== "Common" && i.rarity !== "Uncommon") ? i.chance * 2 : i.chance;
+        });
+
+        let rand = Math.floor(Math.random() * totalChance) + 1;
+        let cumulative = 0;
+
+        for (let i of items) {
+            let chance = (gameState.isPermLuck && i.rarity !== "Common" && i.rarity !== "Uncommon") ? i.chance * 2 : i.chance;
+            cumulative += chance;
+            if (rand <= cumulative) return i;
+        }
+        return items[0];
+    }
+
+    function rollOnce() {
+        gameState.totalRolls++;
+        let res = getRandomItem();
+        gameState.inventory.push(res);
+        log(`Roll #${gameState.totalRolls}: [${res.name}] (${res.rarity}) - Price: ${res.price}$`);
+        updateUI();
+    }
+
+    function autoRoll(count) {
+        if (!gameState.hasAutoRoll) {
+            alert("You need Auto-Roll License (10M$)!");
+            return;
+        }
+
+        log(`\n--- ULTRA FAST AUTO ROLLING ${count.toLocaleString()} TIMES ---`);
+        let rarityCounts = {};
+        let rawEarned = 0;
+
+        for (let i = 0; i < count; i++) {
+            gameState.totalRolls++;
+            let res = getRandomItem();
+            rawEarned += res.price;
+            rarityCounts[res.rarity] = (rarityCounts[res.rarity] || 0) + 1;
+        }
+
+        let totalEarned = rawEarned * gameState.moneyMulti;
+        gameState.coins += totalEarned;
+
+        log(`-> AUTO COMPLETE! Summary of ${count.toLocaleString()} rolls:`);
+        for (let r in rarityCounts) {
+            log(`   - ${r}: ${rarityCounts[r]}`);
+        }
+        log(`-> Earned: +${formatMoney(totalEarned)} (Multiplier: x${gameState.moneyMulti})`);
+        updateUI();
+    }
+
+    function customAutoRoll() {
+        let countInput = prompt("Enter auto roll count (e.g. 10000000):", "10000000");
+        let count = parseInt(countInput);
+        if (count && count > 0) {
+            autoRoll(count);
+        }
+    }
+
+    function sellAll() {
+        if (gameState.inventory.length === 0) {
+            log("Inventory is empty!");
+            return;
+        }
+        let raw = gameState.inventory.reduce((sum, item) => sum + item.price, 0);
+        let total = raw * gameState.moneyMulti;
+        gameState.coins += total;
+        log(`-> Sold ${gameState.inventory.length} inventory items for +${formatMoney(total)}`);
+        gameState.inventory = [];
+        updateUI();
+    }
+
+    function buyShopItem(id) {
+        let item = shopItems.find(i => i.id === id);
+        if (!item || gameState.coins < item.price) return;
+
+        gameState.coins -= item.price;
+
+        if (item.key) gameState[item.key] = true;
+        if (item.multi) gameState.moneyMulti *= item.multi;
+
+        log(`-> Unlocked ${item.name}!`);
+        updateUI();
+    }
+
+    // PERSISTENCE & DATA MANAGEMENT
+    function saveGame() {
+        localStorage.setItem("mikra_rng_gui_save", JSON.stringify(gameState));
+    }
+
+    function loadGame() {
+        let saved = localStorage.getItem("mikra_rng_gui_save");
+        if (saved) {
+            try { gameState = { ...gameState, ...JSON.parse(saved) }; } catch(e) {}
+        }
+    }
+
+    function exportCode() {
+        let code = btoa(JSON.stringify(gameState));
+        prompt("Copy your Base64 Save Code below:", code);
+    }
+
+    function importCode() {
+        let code = prompt("Paste your Base64 Save Code here:");
+        if (code) {
+            try {
+                gameState = { ...gameState, ...JSON.parse(atob(code.trim())) };
+                log("-> Save data imported successfully!");
+                updateUI();
+            } catch(e) {
+                alert("Invalid Save Code!");
+            }
+        }
+    }
+
+    window.onload = function() {
+        loadGame();
+        log("Welcome to Mikra's RNG System v3.0 (Button GUI Ready)");
+        updateUI();
+    };
+</script>
+
+</body>
+</html>
