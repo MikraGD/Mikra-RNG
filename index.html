@@ -79,6 +79,34 @@
 
 <script>
     const WORKER_API_URL = "https://mikra-rng-api.mikrayoutube.workers.dev/api/sync";
+    // Ok login things
+    async function cloudSync(isSaveAction = false) {
+    const username = prompt("Nhập Username:");
+    const password = prompt("Nhập Password:");
+    if (!username || !password) return;
+
+    try {
+        log("-> Đang kết nối Cloud...");
+        const res = await fetch(WORKER_API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password, saveData: isSaveAction ? gameState : null })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            alert(data.message);
+            if (!isSaveAction && data.saveData) {
+                gameState = { ...gameState, ...data.saveData };
+                updateUI();
+            }
+        } else {
+            alert("Lỗi: " + data.message);
+        }
+    } catch (err) {
+        alert("Không thể kết nối Server!");
+    }
+}
     // GAME ENGINE & CONFIGURATION
     const items = [
         { name: "Nature",   chance: 6000, rarity: "Common",    price: 10 },
