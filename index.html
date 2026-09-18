@@ -421,7 +421,95 @@ function pasteSaveText() {
         alert("🔴 Lỗi: Mã Save không hợp lệ hoặc bị sửa đổi!");
     }
 }
+// ==========================================
+// THÊM MỚI: BỘ SAVE / LOAD BẰNG BASE64 ĐƠN GIẢN
+// ==========================================
 
+// 1. Encode sang Base64 an toàn
+function encodeBase64Save(dataObj) {
+    try {
+        const jsonString = JSON.stringify(dataObj);
+        return btoa(encodeURIComponent(jsonString));
+    } catch (e) {
+        console.error("Lỗi Encode Base64:", e);
+        return null;
+    }
+}
+
+// 2. Decode từ Base64 về Object
+function decodeBase64Save(base64Str) {
+    try {
+        const jsonString = decodeURIComponent(atob(base64Str.trim()));
+        return JSON.parse(jsonString);
+    } catch (e) {
+        console.error("Lỗi Decode Base64:", e);
+        return null;
+    }
+}
+
+// 3. Hàm Export File Base64 mới (Dành cho nút Tải File Base64)
+function exportBase64File() {
+    const base64Data = encodeBase64Save(gameState);
+    if (!base64Data) return alert("🔴 Lỗi khi tạo dữ liệu Save!");
+
+    const blob = new Blob([base64Data], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `mikra_b64_${Date.now()}.mikra`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+}
+
+// 4. Hàm Import File Base64 mới (Dành cho nút Nạp File Base64)
+function importBase64File() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".mikra, .txt, .json";
+
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.readAsText(file, "UTF-8");
+        reader.onload = event => {
+            const loadedState = decodeBase64Save(event.target.result);
+            if (loadedState) {
+                gameState = { ...gameState, ...loadedState };
+                if (typeof updateUI === "function") updateUI();
+                alert("🟢 Khôi phục Save Base64 thành công!");
+            } else {
+                alert("🔴 Lỗi: File Save Base64 không hợp lệ!");
+            }
+        };
+    };
+    input.click();
+}
+
+// 5. Nút Copy Mã Base64
+function copySaveText() {
+    const base64Data = encodeBase64Save(gameState);
+    if (base64Data) {
+        navigator.clipboard.writeText(base64Data);
+        alert("📋 Đã copy mã Base64 vào bộ nhớ tạm!");
+    }
+}
+
+// 6. Nút Dán Mã Base64
+function pasteSaveText() {
+    const userText = prompt("Dán mã Base64 Save của bạn vào đây:");
+    if (!userText) return;
+
+    const loadedState = decodeBase64Save(userText);
+    if (loadedState) {
+        gameState = { ...gameState, ...loadedState };
+        if (typeof updateUI === "function") updateUI();
+        alert("🟢 Load Save Base64 thành công!");
+    } else {
+        alert("🔴 Lỗi: Chuỗi Base64 không hợp lệ!");
+    }
+}
 
 </script>
 
