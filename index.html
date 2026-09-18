@@ -3,354 +3,399 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mikra's RNG </title>
+    <title>Mikra RNG System v3.0</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
-        body { background-color: #0d1117; color: #c9d1d9; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
-        
-        .game-card { width: 100%; max-width: 950px; background-color: #161b22; border: 1px solid #30363d; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; gap: 12px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        /* Dashboard Stats */
-        .stats-panel { background: #21262d; border: 1px solid #30363d; padding: 12px 15px; border-radius: 6px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
-        .stat-box { font-size: 14px; font-weight: bold; }
-        .coins-val { color: #2ea043; font-size: 18px; }
-        .badge { background: #388bfd15; color: #58a6ff; border: 1px solid #388bfd30; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 4px; }
-        
-        /* Action Controls Grid */
-        .actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
-        .btn { background-color: #21262d; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px; padding: 10px; cursor: pointer; font-weight: bold; font-family: inherit; font-size: 13px; text-align: center; transition: all 0.2s; }
-        .btn:hover { background-color: #30363d; border-color: #8b949e; }
-        .btn-primary { background-color: #238636; color: #fff; border-color: rgba(240,246,252,0.1); }
-        .btn-primary:hover { background-color: #2ea043; }
-        .btn-danger { background-color: #da3633; color: #fff; }
-        .btn-danger:hover { background-color: #f85149; }
-        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-        /* Shop Section UI */
-        .section-title { font-size: 14px; font-weight: bold; color: #58a6ff; margin-top: 5px; }
-        .shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
-        .shop-item { background: #0d1117; border: 1px solid #30363d; padding: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
-        .shop-info { font-size: 12px; }
-        .shop-name { font-weight: bold; color: #f0f6fc; margin-bottom: 3px; }
-        .shop-price { color: #8b949e; }
-
-        /* Console Window Output */
-        #console { height: 240px; background-color: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 12px; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; font-size: 13px; line-height: 1.4; color: #8b949e; }
-        #console::-webkit-scrollbar { width: 6px; }
-        #console::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .game-container {
+            width: 100%;
+            max-width: 850px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+        }
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+        .player-info {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .balance-info {
+            font-size: 18px;
+            color: #e3b341;
+            font-weight: bold;
+        }
+        .status-panel {
+            background: #0d1117;
+            border: 1px solid #21262d;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #8b949e;
+            white-space: pre-wrap;
+        }
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #58a6ff;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.2s ease-in-out;
+        }
+        button:hover {
+            background: #30363d;
+            color: #58a6ff;
+            border-color: #58a6ff;
+        }
+        .btn-green { background: #238636; color: #ffffff; border-color: #2ea043; }
+        .btn-green:hover { background: #2ea043; color: #ffffff; }
+        .btn-blue { background: #1f6feb; color: #ffffff; border-color: #388bfd; }
+        .btn-blue:hover { background: #388bfd; color: #ffffff; }
+        .btn-danger { background: #da3633; color: #ffffff; border-color: #f85149; }
+        .btn-danger:hover { background: #f85149; color: #ffffff; }
+        .shop-container {
+            border-top: 1px solid #30363d;
+            padding-top: 15px;
+            margin-bottom: 15px;
+        }
+        .shop-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #79c0ff;
+        }
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+        }
+        .shop-item {
+            background: #0d1117;
+            border: 1px solid #21262d;
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .shop-item-info {
+            font-size: 12px;
+        }
+        .shop-item-name {
+            font-weight: bold;
+            color: #c9d1d9;
+        }
+        .shop-item-cost {
+            color: #e3b341;
+        }
+        .terminal-log {
+            background: #000000;
+            border: 1px solid #30363d;
+            height: 180px;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-y: auto;
+            color: #3fb950;
+            font-size: 12px;
+            white-space: pre-wrap;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+        .save-controls-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-top: 1px solid #30363d;
+            padding-top: 15px;
+        }
+        .button-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
     </style>
 </head>
 <body>
 
-<div class="game-card">
-    <!-- Top Player Stats Bar -->
-    <div class="stats-panel">
-        <div class="stat-box">
-            Player: <span id="username" style="color: #f0f6fc;">Mikra</span>
-            <span id="badges"></span>
-        </div>
-        <div class="stat-box">
-            Coins: <span id="coins" class="coins-val">0$</span>
+<div class="game-container">
+    <!-- HEADER STATS DISPLAY -->
+    <div class="header-bar">
+        <div class="player-info">Player: <span id="ui-user" style="color: #58a6ff;">Mikra</span></div>
+        <div class="balance-info">Balance: <span id="ui-coins">42.33B$</span></div>
+    </div>
+
+    <!-- STATUS DISPLAY PANEL -->
+    <div class="status-panel" id="status-panel">
+        User: Mikra | Balance: 42.33B$ | Total Rolls: 11514553
+Status: [PERM LUCK x2!] [AUTO-ROLL UNLOCKED] [SKIP-TERM GAMEPASS] [MONEY x30]
+--------------------------------------------------------------------------------
+Commands: 'roll' | 'auto' | 'shop' | 'inv' | 'sellall' | 'export' | 'import' | 'exit'
+    </div>
+
+    <!-- MAIN GAMEPLAY ACTIONS -->
+    <div class="action-grid">
+        <button class="btn-green" onclick="roll()">🎲 ROLL (1x)</button>
+        <button onclick="toggleAutoRoll()">⚡ AUTO ROLL</button>
+        <button class="btn-danger" onclick="sellAll()">💰 SELL ALL</button>
+    </div>
+
+    <!-- SHOP GAMEPASSES SECTION -->
+    <div class="shop-container">
+        <div class="shop-title">🛒 SHOP GAMEPASSES</div>
+        <div class="shop-grid">
+            <div class="shop-item">
+                <div class="shop-item-info">
+                    <div class="shop-item-name">Auto-Roll License</div>
+                    <div class="shop-item-cost">10.00M$</div>
+                </div>
+                <button onclick="buyGamepass('autoRollUnlocked', 10000000)">BUY</button>
+            </div>
+            <div class="shop-item">
+                <div class="shop-item-info">
+                    <div class="shop-item-name">Perm Luck x2</div>
+                    <div class="shop-item-cost">100.00K$</div>
+                </div>
+                <button onclick="buyGamepass('permLuck', 100000)">BUY</button>
+            </div>
+            <div class="shop-item">
+                <div class="shop-item-info">
+                    <div class="shop-item-name">Skip Terminal Log</div>
+                    <div class="shop-item-cost">1.00B$</div>
+                </div>
+                <button onclick="buyGamepass('skipTermGamepass', 1000000000)">BUY</button>
+            </div>
+            <div class="shop-item">
+                <div class="shop-item-info">
+                    <div class="shop-item-name">Money Multi x30</div>
+                    <div class="shop-item-cost">200.00M$</div>
+                </div>
+                <button onclick="buyGamepass('moneyMultiplier', 200000000)">BUY</button>
+            </div>
         </div>
     </div>
 
-    <!-- Gameplay Buttons -->
-    <div class="actions-grid">
-        <button class="btn btn-primary" onclick="rollOnce()">🎲 ROLL (1x)</button>
-        <button class="btn" id="btnAuto1k" onclick="autoRoll(1000)">⚡ AUTO 1K</button>
-        <button class="btn" id="btnAuto1m" onclick="autoRoll(1000000)">🚀 AUTO 1M</button>
-        <button class="btn" id="btnAutoCustom" onclick="customAutoRoll()">⚙️ AUTO CUSTOM</button>
-        <button class="btn btn-danger" onclick="sellAll()">💰 SELL ALL</button>
-    </div>
+    <!-- TERMINAL DISPLAY -->
+    <div class="terminal-log" id="system-log">Welcome to Mikra's RNG System v3.0 (Button GUI Ready)</div>
 
-    <!-- Shop Interface -->
-    <div class="section-title">🛒 SHOP GAMEPASSES</div>
-    <div class="shop-grid" id="shopGrid"></div>
-
-    <!-- Data Controls & Output Log -->
-    <div class="section-title">📊 SYSTEM LOG</div>
-    <div id="console"></div>
-
-    <div class="actions-grid" style="grid-template-columns: 1fr 1fr;">
-       <!-- Sửa importLocalSave() thành importCustomSaveFile() -->
-<!-- Sửa trực tiếp onclick trong thẻ HTML -->
-<button onclick="exportCustomSaveFile()">📤 Tải File (.mikra)</button>
-<button onclick="importCustomSaveFile()">📥 Nạp File (.mikra)</button>
-        <button class="btn" style="background-color: #1f6feb;" onclick="cloudSync(true)">☁️ Save Cloud</button>
-       <button class="btn" style="background-color: #238636;" onclick="cloudSync(false)">📥 Load Cloud</button>
+    <!-- SAVE CONTROLS SECTION -->
+    <div class="save-controls-group">
+        <div class="button-row">
+            <button onclick="exportCustomSaveFile()">📤 Tải File (.mikra)</button>
+            <button onclick="importCustomSaveFile()">📥 Nạp File (.mikra)</button>
+        </div>
+        <div class="button-row">
+            <button onclick="copySaveText()">📋 Copy Mã Base64</button>
+            <button onclick="pasteSaveText()">📌 Dán Mã Base64</button>
+        </div>
+        <div class="button-row">
+            <button class="btn-blue" onclick="saveCloud()">☁️ Save Cloud</button>
+            <button class="btn-green" onclick="loadCloud()">🕹️ Load Cloud</button>
+        </div>
     </div>
 </div>
 
-    <script>
-const WORKER_API_URL = "https://mikrarngapi.mikrayoutube.workers.dev/api/sync";    // Ok login things
-   async function cloudSync(isSaveAction = false) {
-    const username = prompt("Nhập Username:");
-    if (!username) return;
-    const password = prompt("Nhập Password:");
-    if (!password) return;
-
-    const payload = {
-        username: username.trim(),
-        password: password.trim(),
-        saveData: isSaveAction ? gameState : null
-    };
-
-    try {
-        log("-> Đang kết nối Cloud Server...");
-        const res = await fetch(WORKER_API_URL, {
-            method: "POST", // Bắt buộc phải là POST
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-
-        const data = await res.json();
-
-        if (data.success) {
-            alert(data.message);
-            if (!isSaveAction && data.saveData) {
-                gameState = { ...gameState, ...data.saveData };
-                updateUI();
-            }
-            log(`-> Cloud Sync thành công! User: ${username}`);
-        } else {
-            alert("Lỗi: " + data.message);
-        }
-    } catch (err) {
-        alert("Không thể kết nối Server!");
-        console.error(err);
-    }
-}
-    // GAME ENGINE & CONFIGURATION
-    const items = [
-        { name: "Nature",   chance: 6000, rarity: "Common",    price: 10 },
-        { name: "Winter",   chance: 4000, rarity: "Uncommon",  price: 25 },
-        { name: "Rock",     chance: 2000, rarity: "Rare",      price: 50 },
-        { name: "Iron",     chance: 1000, rarity: "Epic",      price: 100 },
-        { name: "Gold",     chance: 500,  rarity: "Legendary", price: 250 },
-        { name: "Diamond",  chance: 100,  rarity: "Mythical",  price: 1000 },
-        { name: "Mikra",    chance: 10,   rarity: "Godlike",   price: 10000 },
-        { name: "GalaXy",   chance: 2,    rarity: "Secret",    price: 100000 },
-        { name: "Matrix",   chance: 1,    rarity: "Cosmic",    price: 500000 }
-    ];
-
-    const shopItems = [
-    { id: "auto", name: "Auto-Roll License", price: 10000000, key: "hasAutoRoll" },
-    { id: "luck", name: "Perm Luck x2", price: 100000, key: "isPermLuck" },
-    { id: "skip", name: "Skip Terminal Log", price: 1000000000, key: "isSkipTerminal" },
-    { id: "m2",   name: "Money Multi x2", price: 10000000, key: "hasMulti2", multi: 2 },
-    { id: "m3",   name: "Money Multi x3", price: 50000000, key: "hasMulti3", multi: 3 },
-    { id: "m5",   name: "Money Multi x5", price: 200000000, key: "hasMulti5", multi: 5 }
-];
-
-    let gameState = {
-        username: "Mikra",
-        coins: 0,
-        totalRolls: 0,
-        isPermLuck: false,
-        isSkipTerminal: false,
-        hasAutoRoll: false,
-        moneyMulti: 1,
-        inventory: []
-    };
-
-    // UTILITIES
-    function formatMoney(amount) {
-        amount = Number(amount) || 0;
-        if (amount >= 1e12) return (amount / 1e12).toFixed(2) + "T$";
-        if (amount >= 1e9)  return (amount / 1e9).toFixed(2) + "B$";
-        if (amount >= 1e6)  return (amount / 1e6).toFixed(2) + "M$";
-        if (amount >= 1e3)  return (amount / 1e3).toFixed(2) + "K$";
-        return Math.floor(amount) + "$";
-    }
-
-    function log(text) {
-        const c = document.getElementById("console");
-        c.innerText += text + "\n";
-        c.scrollTop = c.scrollHeight;
-    }
-
-    function updateUI() {
-        document.getElementById("coins").innerText = formatMoney(gameState.coins);
-        
-        let badges = "";
-        if (gameState.isPermLuck) badges += `<span class="badge">LUCK x2</span>`;
-        if (gameState.hasAutoRoll) badges += `<span class="badge">AUTO</span>`;
-        if (gameState.isSkipTerminal) badges += `<span class="badge">SKIP-LOG</span>`;
-        if (gameState.moneyMulti > 1) badges += `<span class="badge">x${gameState.moneyMulti} MONEY</span>`;
-        document.getElementById("badges").innerHTML = badges;
-
-        document.getElementById("btnAuto1k").disabled = !gameState.hasAutoRoll;
-        document.getElementById("btnAuto1m").disabled = !gameState.hasAutoRoll;
-        document.getElementById("btnAutoCustom").disabled = !gameState.hasAutoRoll;
-
-        renderShop();
-        saveGame();
-    }
-
-    function renderShop() {
-        const grid = document.getElementById("shopGrid");
-        grid.innerHTML = "";
-        
-        shopItems.forEach(item => {
-            let owned = item.key ? gameState[item.key] : false;
-            let btnText = owned ? "OWNED" : "BUY";
-            let btnDisabled = owned || gameState.coins < item.price;
-
-            grid.innerHTML += `
-                <div class="shop-item">
-                    <div class="shop-info">
-                        <div class="shop-name">${item.name}</div>
-                        <div class="shop-price">${formatMoney(item.price)}</div>
-                    </div>
-                    <button class="btn btn-primary" ${btnDisabled ? "disabled" : ""} onclick="buyShopItem('${item.id}')">${btnText}</button>
-                </div>
-            `;
-        });
-    }
-
-    // GAME LOGIC
-    function getRandomItem() {
-        let totalChance = 0;
-        items.forEach(i => {
-            totalChance += (gameState.isPermLuck && i.rarity !== "Common" && i.rarity !== "Uncommon") ? i.chance * 2 : i.chance;
-        });
-
-        let rand = Math.floor(Math.random() * totalChance) + 1;
-        let cumulative = 0;
-
-        for (let i of items) {
-            let chance = (gameState.isPermLuck && i.rarity !== "Common" && i.rarity !== "Uncommon") ? i.chance * 2 : i.chance;
-            cumulative += chance;
-            if (rand <= cumulative) return i;
-        }
-        return items[0];
-    }
-
-    function rollOnce() {
-        gameState.totalRolls++;
-        let res = getRandomItem();
-        gameState.inventory.push(res);
-        log(`Roll #${gameState.totalRolls}: [${res.name}] (${res.rarity}) - Price: ${res.price}$`);
-        updateUI();
-    }
-
-    function autoRoll(count) {
-        if (!gameState.hasAutoRoll) {
-            alert("You need Auto-Roll License (10M$)!");
-            return;
-        }
-
-        log(`\n--- ULTRA FAST AUTO ROLLING ${count.toLocaleString()} TIMES ---`);
-        let rarityCounts = {};
-        let rawEarned = 0;
-
-        for (let i = 0; i < count; i++) {
-            gameState.totalRolls++;
-            let res = getRandomItem();
-            rawEarned += res.price;
-            rarityCounts[res.rarity] = (rarityCounts[res.rarity] || 0) + 1;
-        }
-
-        let totalEarned = rawEarned * gameState.moneyMulti;
-        gameState.coins += totalEarned;
-
-        log(`-> AUTO COMPLETE! Summary of ${count.toLocaleString()} rolls:`);
-        for (let r in rarityCounts) {
-            log(`   - ${r}: ${rarityCounts[r]}`);
-        }
-        log(`-> Earned: +${formatMoney(totalEarned)} (Multiplier: x${gameState.moneyMulti})`);
-        updateUI();
-    }
-
-    function customAutoRoll() {
-        let countInput = prompt("Enter auto roll count (e.g. 10000000):", "10000000");
-        let count = parseInt(countInput);
-        if (count && count > 0) {
-            autoRoll(count);
-        }
-    }
-
-    function sellAll() {
-        if (gameState.inventory.length === 0) {
-            log("Inventory is empty!");
-            return;
-        }
-        let raw = gameState.inventory.reduce((sum, item) => sum + item.price, 0);
-        let total = raw * gameState.moneyMulti;
-        gameState.coins += total;
-        log(`-> Sold ${gameState.inventory.length} inventory items for +${formatMoney(total)}`);
-        gameState.inventory = [];
-        updateUI();
-    }
-
-    function buyShopItem(id) {
-        let item = shopItems.find(i => i.id === id);
-        if (!item || gameState.coins < item.price) return;
-
-        gameState.coins -= item.price;
-
-        if (item.key) gameState[item.key] = true;
-        if (item.multi) gameState.moneyMulti *= item.multi;
-
-        log(`-> Unlocked ${item.name}!`);
-        updateUI();
-    }
-
-    // PERSISTENCE & DATA MANAGEMENT
-    function saveGame() {
-        localStorage.setItem("mikra_rng_gui_save", JSON.stringify(gameState));
-    }
-
-    function loadGame() {
-        let saved = localStorage.getItem("mikra_rng_gui_save");
-        if (saved) {
-            try { gameState = { ...gameState, ...JSON.parse(saved) }; } catch(e) {}
-        }
-    }
-
-    function exportCode() {
-        let code = btoa(JSON.stringify(gameState));
-        prompt("Copy your Base64 Save Code below:", code);
-    }
-
-    function importCode() {
-        let code = prompt("Paste your Base64 Save Code here:");
-        if (code) {
-            try {
-                gameState = { ...gameState, ...JSON.parse(atob(code.trim())) };
-                log("-> Save data imported successfully!");
-                updateUI();
-            } catch(e) {
-                alert("Invalid Save Code!");
-            }
-        }
-    }
-
-    window.onload = function() {
-        loadGame();
-        log("Welcome to Mikra's RNG System v3.0 (Button GUI Ready)");
-        updateUI();
-    };
+<script>
 // ==========================================
-// MÃ HÓA & KHÔI PHỤC SAVE BẢO MẬT (CLIENT)
+// 1. GAME STATE & SYSTEM CONSTANTS
 // ==========================================
 
-// Secret key mã hóa chống mod file
+const WORKER_API_URL = "https://mikra-rng.mikrayoutube.workers.dev/api/sync";
 const SAVE_SECRET_KEY = "MIKRA_RNG_SUPER_SECRET_2026";
 
-function encodeSaveData(dataObj) {
-    const jsonString = JSON.stringify(dataObj);
-    const base64 = btoa(unescape(encodeURIComponent(jsonString)));
-    let encrypted = "";
-    for (let i = 0; i < base64.length; i++) {
-        encrypted += String.fromCharCode(base64.charCodeAt(i) ^ SAVE_SECRET_KEY.charCodeAt(i % SAVE_SECRET_KEY.length));
+let isAutoRolling = false;
+let autoRollInterval = null;
+
+let gameState = {
+    user: "Mikra",
+    coins: "42330000000",
+    totalRolls: 11514553,
+    permLuck: 2,
+    autoRollUnlocked: true,
+    skipTermGamepass: true,
+    moneyMultiplier: 30,
+    inventory: []
+};
+
+// ==========================================
+// 2. TERMINAL LOGGING & UI FORMATTING
+// ==========================================
+
+function log(msg) {
+    if (gameState.skipTermGamepass && msg.includes("Roll thành công")) return;
+    const logBox = document.getElementById("system-log");
+    if (!logBox) return;
+    logBox.innerText += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
+    logBox.scrollTop = logBox.scrollHeight;
+}
+
+function formatLargeCoins(val) {
+    try {
+        let str = String(val).replace(/[^0-9]/g, '');
+        if (!str || str === '0') return "0.00$";
+        
+        const len = str.length;
+        if (len <= 3) return str + "$";
+        if (len <= 6) return (Number(str) / 1e3).toFixed(2) + "K$";
+        if (len <= 9) return (Number(str) / 1e6).toFixed(2) + "M$";
+        if (len <= 12) return (Number(str) / 1e9).toFixed(2) + "B$";
+        if (len <= 15) return (Number(str) / 1e12).toFixed(2) + "T$";
+        
+        const digits = len - 1;
+        const leading = str.slice(0, 3);
+        const formatted = `${leading[0]}.${leading.slice(1)}`;
+        return `${formatted}e+${digits}$`;
+    } catch (e) {
+        return "0.00$";
     }
-    return btoa(encrypted);
+}
+
+function updateUI() {
+    const userElem = document.getElementById("ui-user");
+    const coinsElem = document.getElementById("ui-coins");
+    const statusElem = document.getElementById("status-panel");
+    
+    if (userElem) userElem.innerText = gameState.user || "Mikra";
+    if (coinsElem) coinsElem.innerText = formatLargeCoins(gameState.coins);
+    
+    if (statusElem) {
+        let statusArr = [];
+        if (gameState.permLuck > 1) statusArr.push(`[PERM LUCK x${gameState.permLuck}!]`);
+        if (gameState.autoRollUnlocked) statusArr.push(`[AUTO-ROLL UNLOCKED]`);
+        if (gameState.skipTermGamepass) statusArr.push(`[SKIP-TERM GAMEPASS]`);
+        if (gameState.moneyMultiplier > 1) statusArr.push(`[MONEY x${gameState.moneyMultiplier}]`);
+        
+        const formattedCoins = formatLargeCoins(gameState.coins);
+        statusElem.innerText = 
+            `User: ${gameState.user} | Balance: ${formattedCoins} | Total Rolls: ${gameState.totalRolls}\n` +
+            `Status: ${statusArr.join(" ") || "[BASIC]"}\n` +
+            `--------------------------------------------------------------------------------\n` +
+            `Commands: 'roll' | 'auto' | 'shop' | 'inv' | 'sellall' | 'export' | 'import' | 'exit'`;
+    }
+}
+
+// ==========================================
+// 3. GAMEPLAY ENGINE & ROLL LOGIC
+// ==========================================
+
+function roll() {
+    try {
+        let currentCoins = BigInt(String(gameState.coins || 0));
+        let reward = BigInt(Math.floor(Math.random() * 1000) * (gameState.moneyMultiplier || 1) * (gameState.permLuck || 1));
+        gameState.coins = (currentCoins + reward).toString();
+        gameState.totalRolls = (gameState.totalRolls || 0) + 1;
+        log(`Roll thành công! +${reward.toString()}$`);
+        updateUI();
+    } catch (e) {
+        console.error("Roll error:", e);
+    }
+}
+
+function toggleAutoRoll() {
+    if (!gameState.autoRollUnlocked) {
+        alert("Bạn chưa mua Auto-Roll License!");
+        return;
+    }
+    isAutoRolling = !isAutoRolling;
+    if (isAutoRolling) {
+        log("-> Bắt đầu Auto-Roll...");
+        autoRollInterval = setInterval(roll, 200);
+    } else {
+        log("-> Đã dừng Auto-Roll.");
+        clearInterval(autoRollInterval);
+    }
+}
+
+function sellAll() {
+    log(`Đã bán toàn bộ vật phẩm! Balance hiện tại: ${formatLargeCoins(gameState.coins)}`);
+    updateUI();
+}
+
+function buyGamepass(passKey, cost) {
+    let currentCoins = BigInt(String(gameState.coins || 0));
+    let price = BigInt(cost);
+    
+    if (currentCoins < price) {
+        alert("Bạn không đủ tiền!");
+        return;
+    }
+    
+    gameState.coins = (currentCoins - price).toString();
+    if (passKey === 'permLuck') gameState.permLuck = (gameState.permLuck || 1) * 2;
+    else if (passKey === 'moneyMultiplier') gameState.moneyMultiplier = 30;
+    else gameState[passKey] = true;
+    
+    log(`Đã mua Gamepass: ${passKey}`);
+    updateUI();
+}
+
+// ==========================================
+// 4. BASE64 & ENCRYPTION METHODS
+// ==========================================
+
+function encodeBase64Save(dataObj) {
+    try {
+        return btoa(encodeURIComponent(JSON.stringify(dataObj)));
+    } catch (e) {
+        return null;
+    }
+}
+
+function decodeBase64Save(base64Str) {
+    try {
+        return JSON.parse(decodeURIComponent(atob(base64Str.trim())));
+    } catch (e) {
+        return null;
+    }
+}
+
+function encodeSaveData(dataObj) {
+    try {
+        const jsonString = JSON.stringify(dataObj);
+        const base64 = btoa(unescape(encodeURIComponent(jsonString)));
+        let encrypted = "";
+        for (let i = 0; i < base64.length; i++) {
+            encrypted += String.fromCharCode(base64.charCodeAt(i) ^ SAVE_SECRET_KEY.charCodeAt(i % SAVE_SECRET_KEY.length));
+        }
+        return btoa(encrypted);
+    } catch (e) {
+        return encodeBase64Save(dataObj);
+    }
 }
 
 function decodeSaveData(encodedStr) {
     try {
-        const encrypted = atob(encodedStr);
+        const encrypted = atob(encodedStr.trim());
         let base64 = "";
         for (let i = 0; i < encrypted.length; i++) {
             base64 += String.fromCharCode(encrypted.charCodeAt(i) ^ SAVE_SECRET_KEY.charCodeAt(i % SAVE_SECRET_KEY.length));
@@ -358,111 +403,27 @@ function decodeSaveData(encodedStr) {
         const jsonString = decodeURIComponent(escape(atob(base64)));
         return JSON.parse(jsonString);
     } catch (e) {
-        return null;
+        return decodeBase64Save(encodedStr);
     }
 }
 
-// 1. Xuất file .mikra
+// ==========================================
+// 5. LOCAL FILE SYSTEM IMPORT / EXPORT (.MIKRA)
+// ==========================================
+
 function exportCustomSaveFile() {
     const secureData = encodeSaveData(gameState);
     const blob = new Blob([secureData], { type: "application/octet-stream" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `save_${Date.now()}.mikra`;
+    a.download = `mikra_save_${Date.now()}.mikra`;
     document.body.appendChild(a);
     a.click();
     a.remove();
+    log("-> Đã xuất file .mikra bảo mật về máy!");
 }
 
-// 2. Nhập file .mikra
 function importCustomSaveFile() {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".mikra";
-
-    input.onchange = e => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.readAsText(file);
-        reader.onload = event => {
-            const loadedState = decodeSaveData(event.target.result.trim());
-            if (loadedState) {
-                gameState = { ...gameState, ...loadedState };
-                updateUI();
-                alert("🟢 Khôi phục Save .mikra thành công!");
-            } else {
-                alert("🔴 Lỗi: File Save bị hỏng hoặc đã bị chỉnh sửa (Mod)!");
-            }
-        };
-    };
-    input.click();
-}
-
-// 3. Copy chuỗi Save
-function copySaveText() {
-    const secureText = encodeSaveData(gameState);
-    navigator.clipboard.writeText(secureText);
-    alert("Đã copy mã Save mã hóa vào Bộ nhớ tạm!");
-}
-
-// 4. Dán chuỗi Save
-function pasteSaveText() {
-    const userText = prompt("Dán mã Save của bạn vào đây:");
-    if (!userText) return;
-
-    const loadedState = decodeSaveData(userText.trim());
-    if (loadedState) {
-        gameState = { ...gameState, ...loadedState };
-        updateUI();
-        alert("🟢 Load Save thành công!");
-    } else {
-        alert("🔴 Lỗi: Mã Save không hợp lệ hoặc bị sửa đổi!");
-    }
-}
-// ==========================================
-// THÊM MỚI: BỘ SAVE / LOAD BẰNG BASE64 ĐƠN GIẢN
-// ==========================================
-
-// 1. Encode sang Base64 an toàn
-function encodeBase64Save(dataObj) {
-    try {
-        const jsonString = JSON.stringify(dataObj);
-        return btoa(encodeURIComponent(jsonString));
-    } catch (e) {
-        console.error("Lỗi Encode Base64:", e);
-        return null;
-    }
-}
-
-// 2. Decode từ Base64 về Object
-function decodeBase64Save(base64Str) {
-    try {
-        const jsonString = decodeURIComponent(atob(base64Str.trim()));
-        return JSON.parse(jsonString);
-    } catch (e) {
-        console.error("Lỗi Decode Base64:", e);
-        return null;
-    }
-}
-
-// 3. Hàm Export File Base64 mới (Dành cho nút Tải File Base64)
-function exportBase64File() {
-    const base64Data = encodeBase64Save(gameState);
-    if (!base64Data) return alert("🔴 Lỗi khi tạo dữ liệu Save!");
-
-    const blob = new Blob([base64Data], { type: "text/plain;charset=utf-8" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `mikra_b64_${Date.now()}.mikra`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-}
-
-// 4. Hàm Import File Base64 mới (Dành cho nút Nạp File Base64)
-function importBase64File() {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = ".mikra, .txt, .json";
@@ -474,29 +435,37 @@ function importBase64File() {
         const reader = new FileReader();
         reader.readAsText(file, "UTF-8");
         reader.onload = event => {
-            const loadedState = decodeBase64Save(event.target.result);
+            const loadedState = decodeSaveData(event.target.result);
             if (loadedState) {
                 gameState = { ...gameState, ...loadedState };
-                if (typeof updateUI === "function") updateUI();
-                alert("🟢 Khôi phục Save Base64 thành công!");
+                updateUI();
+                alert("🟢 Khôi phục Save .mikra thành công!");
+                log("-> Đã nạp thành công file Save .mikra!");
             } else {
-                alert("🔴 Lỗi: File Save Base64 không hợp lệ!");
+                alert("🔴 Lỗi: File Save bị hỏng hoặc không đúng định dạng!");
             }
         };
     };
     input.click();
 }
 
-// 5. Nút Copy Mã Base64
+function importLocalSave() {
+    importCustomSaveFile();
+}
+
+// ==========================================
+// 6. CLIPBOARD MANAGEMENT
+// ==========================================
+
 function copySaveText() {
     const base64Data = encodeBase64Save(gameState);
     if (base64Data) {
         navigator.clipboard.writeText(base64Data);
         alert("📋 Đã copy mã Base64 vào bộ nhớ tạm!");
+        log("-> Đã copy mã Save mã hóa!");
     }
 }
 
-// 6. Nút Dán Mã Base64
 function pasteSaveText() {
     const userText = prompt("Dán mã Base64 Save của bạn vào đây:");
     if (!userText) return;
@@ -504,20 +473,76 @@ function pasteSaveText() {
     const loadedState = decodeBase64Save(userText);
     if (loadedState) {
         gameState = { ...gameState, ...loadedState };
-        if (typeof updateUI === "function") updateUI();
-        alert("🟢 Load Save Base64 thành công!");
+        updateUI();
+        alert("🟢 Load Save thành công!");
+        log("-> Đã khôi phục dữ liệu từ chuỗi Base64!");
     } else {
-        alert("🔴 Lỗi: Chuỗi Base64 không hợp lệ!");
+        alert("🔴 Lỗi: Mã Save không hợp lệ!");
     }
 }
-        <!-- Dàn nút mới dùng Base64 chuẩn không lo lỗi -->
-<div class="b64-save-options" style="margin-top: 8px;">
-    <button onclick="exportBase64File()">📤 Tải File (Base64)</button>
-    <button onclick="importBase64File()">📥 Nạp File (Base64)</button>
-    <button onclick="copySaveText()">📋 Copy Mã Base64</button>
-    <button onclick="pasteSaveText()">📌 Dán Mã Base64</button>
-</div>
 
+// ==========================================
+// 7. BACKEND CLOUD SYNC (WORKER API & D1)
+// ==========================================
+
+async function saveCloud() {
+    try {
+        log("-> Đang đồng bộ lên Cloud...");
+        const res = await fetch(WORKER_API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username: gameState.user,
+                password: "guest_password",
+                saveData: gameState
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert("🟢 Save Cloud thành công!");
+            log("-> Save Cloud thành công!");
+        } else {
+            alert("🔴 Lỗi Save Cloud: " + (data.message || "Unknown error"));
+        }
+    } catch (e) {
+        alert("🔴 Lỗi kết nối Server!");
+    }
+}
+
+async function loadCloud() {
+    try {
+        log("-> Đang tải Save từ Cloud...");
+        const res = await fetch(WORKER_API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username: gameState.user,
+                password: "guest_password",
+                saveData: null
+            })
+        });
+        const data = await res.json();
+        if (data.success && data.saveData) {
+            gameState = { ...gameState, ...data.saveData };
+            updateUI();
+            alert("🟢 Load Cloud thành công!");
+            log("-> Tải thành công Save từ Cloud!");
+        } else {
+            alert("🔴 Không tìm thấy bản Save trên Cloud!");
+        }
+    } catch (e) {
+        alert("🔴 Lỗi kết nối Server!");
+    }
+}
+
+// ==========================================
+// 8. SYSTEM INITIALIZATION
+// ==========================================
+
+window.onload = function() {
+    updateUI();
+    log("System Initialized. Connected to Cloudflare backend.");
+};
 </script>
 
 </body>
