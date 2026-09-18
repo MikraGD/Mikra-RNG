@@ -80,7 +80,10 @@
     </div>
 </div>
 
-<script>
+function importLocalSave() {
+    importCustomSaveFile(); // Gọi thẳng sang hàm đọc file mã hóa .mikra
+}
+    <script>
 const WORKER_API_URL = "https://mikrarngapi.mikrayoutube.workers.dev/api/sync";    // Ok login things
    async function cloudSync(isSaveAction = false) {
     const username = prompt("Nhập Username:");
