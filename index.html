@@ -72,8 +72,10 @@
     <div id="console"></div>
 
     <div class="actions-grid" style="grid-template-columns: 1fr 1fr;">
-       <button class="btn" style="background-color: #1f6feb;" onclick="cloudSync(true)">☁️ Save Cloud</button>
-<button class="btn" style="background-color: #238636;" onclick="cloudSync(false)">📥 Load Cloud</button>
+       <button onclick="exportLocalSave()">📤 Export Save File</button>
+<button onclick="importLocalSave()">📥 Import Save File</button>
+        <button class="btn" style="background-color: #1f6feb;" onclick="cloudSync(true)">☁️ Save Cloud</button>
+       <button class="btn" style="background-color: #238636;" onclick="cloudSync(false)">📥 Load Cloud</button>
     </div>
 </div>
 
@@ -327,6 +329,96 @@ const WORKER_API_URL = "https://mikrarngapi.mikrayoutube.workers.dev/api/sync"; 
         log("Welcome to Mikra's RNG System v3.0 (Button GUI Ready)");
         updateUI();
     };
+// ==========================================
+// MÃ HÓA & KHÔI PHỤC SAVE BẢO MẬT (CLIENT)
+// ==========================================
+
+// Secret key mã hóa chống mod file
+const SAVE_SECRET_KEY = "MIKRA_RNG_SUPER_SECRET_2026";
+
+function encodeSaveData(dataObj) {
+    const jsonString = JSON.stringify(dataObj);
+    const base64 = btoa(unescape(encodeURIComponent(jsonString)));
+    let encrypted = "";
+    for (let i = 0; i < base64.length; i++) {
+        encrypted += String.fromCharCode(base64.charCodeAt(i) ^ SAVE_SECRET_KEY.charCodeAt(i % SAVE_SECRET_KEY.length));
+    }
+    return btoa(encrypted);
+}
+
+function decodeSaveData(encodedStr) {
+    try {
+        const encrypted = atob(encodedStr);
+        let base64 = "";
+        for (let i = 0; i < encrypted.length; i++) {
+            base64 += String.fromCharCode(encrypted.charCodeAt(i) ^ SAVE_SECRET_KEY.charCodeAt(i % SAVE_SECRET_KEY.length));
+        }
+        const jsonString = decodeURIComponent(escape(atob(base64)));
+        return JSON.parse(jsonString);
+    } catch (e) {
+        return null;
+    }
+}
+
+// 1. Xuất file .mikra
+function exportCustomSaveFile() {
+    const secureData = encodeSaveData(gameState);
+    const blob = new Blob([secureData], { type: "application/octet-stream" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `save_${Date.now()}.mikra`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+}
+
+// 2. Nhập file .mikra
+function importCustomSaveFile() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".mikra";
+
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.readAsText(file);
+        reader.onload = event => {
+            const loadedState = decodeSaveData(event.target.result.trim());
+            if (loadedState) {
+                gameState = { ...gameState, ...loadedState };
+                updateUI();
+                alert("🟢 Khôi phục Save .mikra thành công!");
+            } else {
+                alert("🔴 Lỗi: File Save bị hỏng hoặc đã bị chỉnh sửa (Mod)!");
+            }
+        };
+    };
+    input.click();
+}
+
+// 3. Copy chuỗi Save
+function copySaveText() {
+    const secureText = encodeSaveData(gameState);
+    navigator.clipboard.writeText(secureText);
+    alert("Đã copy mã Save mã hóa vào Bộ nhớ tạm!");
+}
+
+// 4. Dán chuỗi Save
+function pasteSaveText() {
+    const userText = prompt("Dán mã Save của bạn vào đây:");
+    if (!userText) return;
+
+    const loadedState = decodeSaveData(userText.trim());
+    if (loadedState) {
+        gameState = { ...gameState, ...loadedState };
+        updateUI();
+        alert("🟢 Load Save thành công!");
+    } else {
+        alert("🔴 Lỗi: Mã Save không hợp lệ hoặc bị sửa đổi!");
+    }
+}
 </script>
 
 </body>
