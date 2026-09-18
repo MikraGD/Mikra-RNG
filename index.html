@@ -73,6 +73,7 @@
 
     <div class="actions-grid" style="grid-template-columns: 1fr 1fr;">
        <!-- Sửa importLocalSave() thành importCustomSaveFile() -->
+<!-- Sửa trực tiếp onclick trong thẻ HTML -->
 <button onclick="exportCustomSaveFile()">📤 Tải File (.mikra)</button>
 <button onclick="importCustomSaveFile()">📥 Nạp File (.mikra)</button>
         <button class="btn" style="background-color: #1f6feb;" onclick="cloudSync(true)">☁️ Save Cloud</button>
@@ -420,9 +421,8 @@ function pasteSaveText() {
         alert("🔴 Lỗi: Mã Save không hợp lệ hoặc bị sửa đổi!");
     }
 }
-        function importLocalSave() {
-    importCustomSaveFile(); // Gọi thẳng sang hàm đọc file mã hóa .mikra
-}
+
+
 </script>
 
 </body>
