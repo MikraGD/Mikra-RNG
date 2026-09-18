@@ -510,6 +510,13 @@ function pasteSaveText() {
         alert("🔴 Lỗi: Chuỗi Base64 không hợp lệ!");
     }
 }
+        <!-- Dàn nút mới dùng Base64 chuẩn không lo lỗi -->
+<div class="b64-save-options" style="margin-top: 8px;">
+    <button onclick="exportBase64File()">📤 Tải File (Base64)</button>
+    <button onclick="importBase64File()">📥 Nạp File (Base64)</button>
+    <button onclick="copySaveText()">📋 Copy Mã Base64</button>
+    <button onclick="pasteSaveText()">📌 Dán Mã Base64</button>
+</div>
 
 </script>
 
